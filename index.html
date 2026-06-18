@@ -93,8 +93,8 @@
                 ADM
             </div>
             <div class="flex-1 min-w-0">
-                <p id="cashier-name" class="text-sm font-semibold truncate text-white">Operator Koperasi</p>
-                <p id="cashier-email" class="text-xs text-slate-400 truncate">koperasi@sekolah.sch.id</p>
+                <p id="cashier-name" class="text-sm font-semibold truncate text-white">Admin</p>
+                <p id="cashier-email" class="text-xs text-slate-400 truncate">admin@sekolah.sch.id</p>
             </div>
             <button onclick="logoutCashier()" class="text-slate-400 hover:text-rose-400 p-1.5 hover:bg-slate-800/80 rounded-lg transition" title="Log Keluar">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
@@ -169,7 +169,7 @@
                     <div class="lg:col-span-2 space-y-6">
                         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm relative">
                             <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                <i data-lucide="search" class="w-5 h-5 text-emerald-600"></i> Cari & Pilih Murid
+                                <i data-lucide="search" class="w-5 h-5 text-emerald-600"></i> Cari dan Pilih Murid
                             </h3>
                             
                             <!-- Input Pencarian Pintar (Nama / No Reg) -->
@@ -295,9 +295,6 @@
             <section id="tab-riwayat" class="space-y-6 hidden">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-slate-800 text-sm">Log Pembayaran Koperasi</h3>
-                    <button onclick="clearRiwayatLokal()" class="text-xs text-rose-600 hover:text-rose-700 bg-rose-50 px-3 py-1.5 rounded-lg font-semibold transition">
-                        Reset Log Lokal
-                    </button>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -335,7 +332,7 @@
                             <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
                                 <i data-lucide="calendar-check" class="text-emerald-600"></i> Rekap Sesi Kasir Harian
                             </h3>
-                            <p class="text-xs text-slate-500">Analisis dan periksa akumulasi setoran yang dikumpulkan oleh masing-masing operator kasir.</p>
+                            <p class="text-xs text-slate-500">Analisis dan periksa akumulasi setoran yang dikumpulkan oleh masing-masing operator kasir resmi.</p>
                         </div>
                         <div class="flex items-center gap-3 w-full sm:w-auto">
                             <input type="date" id="rekap-date-filter" onchange="renderRekapKasir()" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-semibold text-slate-700 w-full sm:w-auto">
@@ -387,18 +384,6 @@
                     <div class="pt-2">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Google Apps Script Web App URL (Pencatatan Transaksi & Siswa)</label>
                         <input type="text" id="cfg-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium transition-all" />
-                    </div>
-
-                    <!-- Fitur: Share Link generator dinamis -->
-                    <div class="pt-4 border-t border-slate-100 space-y-2">
-                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Link Koneksi Cepat Browser Baru</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="cfg-share-link" readonly placeholder="Simpan konfigurasi untuk generate link..." class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-mono text-slate-500 focus:outline-none" />
-                            <button onclick="salinShareLink()" class="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl transition whitespace-nowrap">
-                                Salin Link
-                            </button>
-                        </div>
-                        <p class="text-[10px] text-slate-400">Gunakan link ini saat membuka aplikasi di browser lain/incognito agar otomatis terhubung ke database tanpa perlu setting ulang.</p>
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
@@ -504,7 +489,6 @@
 
             loadConfigurations();
             checkCashierLoginSession();
-            generateShareLink();
             
             try {
                 if (typeof lucide !== 'undefined') {
@@ -597,22 +581,6 @@
             state.transaksi = localTx ? JSON.parse(localTx) : [];
         }
 
-        function generateShareLink() {
-            const baseUri = window.location.href.split('?')[0];
-            const shareUrl = `${baseUri}?gas=${encodeURIComponent(state.gasUrl)}`;
-            const linkInput = document.getElementById('cfg-share-link');
-            if (linkInput) linkInput.value = shareUrl;
-        }
-
-        function salinShareLink() {
-            const linkInput = document.getElementById('cfg-share-link');
-            if (linkInput && linkInput.value) {
-                linkInput.select();
-                document.execCommand('copy');
-                showToast("Link konfigurasi berhasil disalin ke papan klip!", "success");
-            }
-        }
-
         function matchesDate(txDateStr, filterDateISO) {
             if (!txDateStr) return false;
             try {
@@ -637,6 +605,7 @@
             }
         }
 
+        // AMAN & SINKRON: Hanya merender data kasir terdaftar (Admin, Annisa, Nanda)
         function renderRekapKasir() {
             const filterDateVal = document.getElementById('rekap-date-filter').value;
             if (!filterDateVal) return;
@@ -648,6 +617,7 @@
 
             const cashierData = {};
 
+            // Inisialisasi secara ketat HANYA untuk 3 Kasir Resmi di CASHIER_ACCOUNTS
             Object.keys(CASHIER_ACCOUNTS).forEach(key => {
                 const acc = CASHIER_ACCOUNTS[key];
                 cashierData[acc.name] = {
@@ -660,16 +630,14 @@
             });
 
             dailyTransactions.forEach(tx => {
-                const cashierName = tx.nama_kasir || tx.kasir || "Operator Koperasi";
-                if (!cashierData[cashierName]) {
-                    cashierData[cashierName] = {
-                        name: cashierName,
-                        email: "koperasi@sekolah.sch.id",
-                        initials: cashierName.substring(0, 3).toUpperCase(),
-                        count: 0,
-                        total: 0
-                    };
+                let cashierName = tx.nama_kasir || tx.kasir || "Admin";
+                
+                // NORMALISASI: Jika ada data kosong, "Operator Koperasi", atau nama lain, masukkan ke "Admin"
+                const isRegistered = Object.values(CASHIER_ACCOUNTS).some(acc => acc.name === cashierName);
+                if (!isRegistered) {
+                    cashierName = "Admin";
                 }
+
                 cashierData[cashierName].count++;
                 cashierData[cashierName].total += parseFloat(tx.jumlah_pembayaran || tx.jumlahPembayaran || 0);
             });
@@ -721,7 +689,7 @@
             }).join('');
         }
 
-        // AMBIL DATA SISWA & TRANSAKSI SEKALIGUS (Dual-Fetch: Siswa dan Log Transaksi Riil)
+        // AMBIL DATA SISWA & TRANSAKSI SEKALIGUS DARI SPREADSHEET (Mencegah CORS / Local File Error)
         function tarikDatabaseTerbaru(manual = false) {
             const badge = document.getElementById('connection-badge');
             badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Sinkronisasi...`;
@@ -955,8 +923,8 @@
                 jenisKelamin: state.selectedSiswa.jenis_kelamin,
                 jumlah_pembayaran: nominal, 
                 jumlahPembayaran: nominal,
-                kasir: state.activeCashier ? state.activeCashier.name : "Operator Koperasi",
-                nama_kasir: state.activeCashier ? state.activeCashier.name : "Operator Koperasi"
+                kasir: state.activeCashier ? state.activeCashier.name : "Admin",
+                nama_kasir: state.activeCashier ? state.activeCashier.name : "Admin"
             };
 
             showToast("Menyimpan transaksi ke Google Sheet...", "info");
@@ -1030,22 +998,12 @@
             localStorage.setItem("kop_gas_url", gas);
 
             showToast("Konfigurasi API berhasil disimpan!", "success");
-            generateShareLink();
             tarikDatabaseTerbaru();
         }
 
         function restoreDefaultConfig() {
             document.getElementById('cfg-gas-url').value = DEFAULT_GAS_URL;
             simpanConfig();
-        }
-
-        function clearRiwayatLokal() {
-            if (confirm("Apakah Anda yakin ingin menghapus seluruh log transaksi lokal?")) {
-                state.transaksi = [];
-                localStorage.removeItem("kop_local_tx");
-                updateDatabaseUI();
-                showToast("Log riwayat lokal berhasil dibersihkan", "success");
-            }
         }
 
         function updateDatabaseUI() {
@@ -1077,7 +1035,7 @@
                     const tglTx = tx.tanggal || "-";
                     const namaSiswaTx = tx.nama_siswa || tx.namaSiswa || "-";
                     const asalSekolahTx = tx.asal_sekolah || tx.asalSekolah || "-";
-                    const kasirTx = tx.nama_kasir || tx.kasir || "Operator";
+                    const kasirTx = tx.nama_kasir || tx.kasir || "Admin";
                     const nominalTx = parseFloat(tx.jumlah_pembayaran || tx.jumlahPembayaran || 0);
 
                     return `
