@@ -128,7 +128,7 @@
             <!-- TAB: DASHBOARD -->
             <!-- ============================================== -->
             <section id="tab-dashboard" class="space-y-6 hidden">
-                <!-- Metrics Grid: Adjusted to 3 columns to beautifully accommodate removed card -->
+                <!-- Metrics Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
                         <div class="p-3 bg-blue-500/10 text-blue-600 rounded-xl">
@@ -401,7 +401,7 @@
                     <p class="text-sm text-slate-500">Konfigurasi URL database eksternal dan webhook pengiriman.</p>
                 </div>
 
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Database Google Sheets CSV URL</label>
                         <input type="text" id="cfg-csv-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium transition-all" />
@@ -539,7 +539,15 @@
             loadConfigurations();
             checkCashierLoginSession();
             generateShareLink();
-            lucide.createIcons();
+            
+            // Bungkus inisialisasi ikon dalam blok pengaman try-catch
+            try {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            } catch (iconErr) {
+                console.warn("Gagal merender beberapa ikon Lucide:", iconErr);
+            }
 
             document.getElementById('mobile-menu-btn').addEventListener('click', () => {
                 document.getElementById('nav-menu').classList.toggle('hidden');
@@ -585,7 +593,9 @@
             document.getElementById('cashier-name').innerText = state.activeCashier.name;
             document.getElementById('cashier-email').innerText = state.activeCashier.email;
             document.getElementById('cashier-initials').innerText = state.activeCashier.initials;
-            lucide.createIcons();
+            try {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch(e){}
         }
 
         function togglePasswordVisibility() {
@@ -599,7 +609,9 @@
                 passwordInput.type = 'password';
                 eyeIcon.setAttribute('data-lucide', 'eye');
             }
-            lucide.createIcons();
+            try {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch(e){}
         }
 
         function logoutCashier() {
@@ -747,7 +759,6 @@
             }).join('');
         }
 
-        // AMBIL DATABASE TERBARU DARI GOOGLE SHEET (Dual-Fetch: Data Murid & Log Transaksi Riil)
         function tarikDatabaseTerbaru(manual = false) {
             const badge = document.getElementById('connection-badge');
             badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Sinkronisasi...`;
@@ -757,7 +768,6 @@
                 showToast("Menghubungkan ke Google Sheets...", "info");
             }
 
-            // Pemicu 1: Tarik database siswa dari CSV
             fetch(state.csvUrl)
                 .then(response => {
                     if (!response.ok) throw new Error("Respons Jaringan Bermasalah");
@@ -768,8 +778,10 @@
                     if (parsed && parsed.length > 0) {
                         state.siswa = parsed;
                         
-                        // Setelah sukses memuat siswa, jalankan pemicu 2: Tarik riwayat transaksi riil dari GAS
-                        tarikRiwayatTransaksiCloud(manual);
+                        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Live Cloud Active`;
+                        badge.className = "flex items-center gap-1.5 font-semibold text-emerald-400 px-2.5 py-0.5 bg-emerald-500/10 rounded-full";
+                        
+                        if (manual) showToast("Database Siswa berhasil disinkronkan secara live!", "success");
                     } else {
                         throw new Error("Data Parsing Kosong");
                     }
@@ -782,43 +794,6 @@
                     badge.className = "flex items-center gap-1.5 font-semibold text-amber-400 px-2.5 py-0.5 bg-amber-500/10 rounded-full";
                     
                     if (manual) showToast("Menggunakan basis data cadangan karena kendala koneksi.", "warning");
-                    updateDatabaseUI();
-                });
-        }
-
-        // TARIK LOG TRANSAKSI RIIL DARI WEB APP GAS (Menjawab Query Pengguna)
-        function tarikRiwayatTransaksiCloud(manual = false) {
-            const badge = document.getElementById('connection-badge');
-            
-            if (!state.gasUrl || state.gasUrl.includes("XXXX")) {
-                updateDatabaseUI();
-                return;
-            }
-
-            fetch(`${state.gasUrl}?action=getData`)
-                .then(response => {
-                    if (!response.ok) throw new Error("Gagal membaca log transaksi cloud.");
-                    return response.json();
-                })
-                .then(data => {
-                    // Jika data berformat array transaksi, sinkronkan ke memori state utama
-                    if (Array.isArray(data)) {
-                        state.transaksi = data;
-                        localStorage.setItem("kop_local_tx", JSON.stringify(state.transaksi));
-                    }
-                    
-                    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Live Cloud Active`;
-                    badge.className = "flex items-center gap-1.5 font-semibold text-emerald-400 px-2.5 py-0.5 bg-emerald-500/10 rounded-full";
-                    
-                    if (manual) {
-                        showToast("Koneksi penuh aktif! Database siswa dan riwayat transaksi telah diselaraskan.", "success");
-                    }
-                })
-                .catch(err => {
-                    console.warn("Gagal menyinkronkan transaksi cloud:", err);
-                    if (manual) {
-                        showToast("Data siswa termuat, tetapi gagal menyinkronkan riwayat transaksi dari cloud.", "warning");
-                    }
                 })
                 .finally(() => {
                     updateDatabaseUI();
@@ -891,7 +866,7 @@
             }
 
             panel.innerHTML = match.slice(0, 5).map(s => `
-                <div onclick="pilihSiswa('${s.nomor_pendaftaran}')" class="p-3 hover:bg-slate-50 border-b border-slate-100 cursor-pointer flex justify-between items-center transition cursor-pointer">
+                <div onclick="pilihSiswa('${s.nomor_pendaftaran}')" class="p-3 hover:bg-slate-50 border-b border-slate-100 cursor-pointer flex justify-between items-center transition">
                     <div>
                         <p class="text-xs font-bold text-slate-800">${s.nama_lengkap}</p>
                         <p class="text-[10px] text-slate-400">${s.asal_sekolah}</p>
@@ -986,7 +961,6 @@
                 })
                 .then(res => {
                     if (res && (res.success || res.status === "success")) {
-                        // Tambahkan transaksi ke atas log lokal dan sinkronkan ke UI
                         catatTransaksiLokal(payload);
                         bukaModal("Pembayaran Berhasil", `Setoran Rp ${nominal.toLocaleString('id-ID')} atas nama ${payload.nama_siswa} sukses dicatat ke Google Sheets!`, "success");
                         resetKasir();
@@ -1010,7 +984,9 @@
                     submitBtn.disabled = false;
                     submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
                     submitIcon.className = "w-4 h-4";
-                    lucide.createIcons();
+                    try {
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                    } catch(e){}
                 });
             } else {
                 catatTransaksiLokal(payload);
@@ -1019,7 +995,9 @@
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
                 submitIcon.className = "w-4 h-4";
-                lucide.createIcons();
+                try {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                } catch(e){}
             }
         }
 
@@ -1267,7 +1245,9 @@
                 iconContainer.innerHTML = `<i data-lucide="x-circle" class="w-7 h-7"></i>`;
             }
 
-            lucide.createIcons();
+            try {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch(e){}
             modal.classList.remove('hidden');
         }
 
@@ -1298,7 +1278,9 @@
             `;
 
             container.appendChild(toast);
-            lucide.createIcons();
+            try {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch(e){}
 
             setTimeout(() => {
                 toast.classList.remove('translate-y-2', 'opacity-0');
