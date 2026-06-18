@@ -129,7 +129,7 @@
             <!-- ============================================== -->
             <section id="tab-dashboard" class="space-y-6 hidden">
                 <!-- Metrics Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
                         <div class="p-3 bg-blue-500/10 text-blue-600 rounded-xl">
                             <i data-lucide="users" class="w-6 h-6"></i>
@@ -137,6 +137,15 @@
                         <div>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Pemesan</p>
                             <h4 id="stat-total-siswa" class="text-2xl font-bold text-slate-800 mt-1">0</h4>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                        <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl">
+                            <i data-lucide="badge-check" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Murid sudah bayar</p>
+                            <h4 id="stat-siswa-lunas" class="text-2xl font-bold text-slate-800 mt-1">0</h4>
                         </div>
                     </div>
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-4">
@@ -233,7 +242,7 @@
                                 <button onclick="prosesPembayaran()" id="submitBtn" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2">
                                     <i data-lucide="send" class="w-4 h-4" id="submit-icon"></i> Simpan Transaksi
                                 </button>
-                                <button onclick="resetKasir()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 font-semibold rounded-xl text-xs transition">
+                                <button onclick="resetKasir()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-655 font-semibold rounded-xl text-xs transition">
                                     Reset Form
                                 </button>
                             </div>
@@ -375,17 +384,12 @@
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Database Google Sheets CSV URL</label>
-                        <input type="text" id="cfg-csv-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium transition-all" />
-                    </div>
-
                     <div class="pt-2">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Google Apps Script Web App URL (Pencatatan Transaksi)</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Google Apps Script Web App URL (Pencatatan Transaksi & Siswa)</label>
                         <input type="text" id="cfg-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium transition-all" />
                     </div>
 
-                    <!-- Fitur Baru: Share Link generator dinamis -->
+                    <!-- Fitur: Share Link generator dinamis -->
                     <div class="pt-4 border-t border-slate-100 space-y-2">
                         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Link Koneksi Cepat Browser Baru</label>
                         <div class="flex gap-2">
@@ -398,7 +402,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
-                        <button onclick="restoreDefaultConfig()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 text-sm font-semibold rounded-xl transition-all">
+                        <button onclick="restoreDefaultConfig()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-655 text-sm font-semibold rounded-xl transition-all">
                             Gunakan Default
                         </button>
                         <button onclick="simpanConfig()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all">
@@ -410,7 +414,7 @@
         </div>
     </main>
 
-    <!-- CUSTOM DIALOG MODAL (Sandi Bebas Alert) -->
+    <!-- CUSTOM DIALOG MODAL -->
     <div id="modal-notif" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full border border-slate-100 shadow-2xl">
             <div id="modal-icon-container" class="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center text-2xl">
@@ -443,7 +447,7 @@
                 <div class="relative">
                     <i data-lucide="lock" class="absolute left-4 top-3.5 text-slate-500 w-4 h-4"></i>
                     <input type="password" id="login-password" placeholder="Masukkan Password..." class="w-full pl-11 pr-12 py-3 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium transition" required />
-                    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-3 text-slate-500 hover:text-slate-350 focus:outline-none transition">
+                    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-3 text-slate-500 hover:text-slate-355 focus:outline-none transition">
                         <i id="eye-icon" data-lucide="eye" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -465,12 +469,8 @@
         const DEFAULT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTnLeTLTQxcIMvFs0H8qsm86cXFzndyurC_z33HcQtB4DTLYMIev45-sQE1gkTDbQf1Thae9KRol45Y/pub?output=csv";
         const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbwKMryy_evrb3rbUDK7GxrCizekFkcTblCdQrCLsJXLKieep5lOGdc34Qj2e3V-PWlWhg/exec";
 
-        const MOCK_SISWA_BACKUP = [
-            { "nomor_pendaftaran": "26-0069", "nama_lengkap": "DAFA ALFIAN AL KHALIFI", "asal_sekolah": "SD BENER 01", "jenis_kelamin": "L" },
-            { "nomor_pendaftaran": "26-0045", "nama_lengkap": "DANU DESTIAN NUGRAHA", "asal_sekolah": "SDN SADAHAYU 01", "jenis_kelamin": "L" },
-            { "nomor_pendaftaran": "26-0074", "nama_lengkap": "ADI GUNAWAN", "asal_sekolah": "SD BENER 01", "jenis_kelamin": "L" },
-            { "nomor_pendaftaran": "26-0077", "nama_lengkap": "BAAS FADILAL AHSAN", "asal_sekolah": "SD BENER 01", "jenis_kelamin": "L" }
-        ];
+        // Bersih dari data dummy bawaan
+        const MOCK_SISWA_BACKUP = [];
 
         const CASHIER_ACCOUNTS = {
             "admin123": { name: "Admin", email: "admin@sekolah.sch.id", initials: "ADM" },
@@ -488,14 +488,10 @@
         };
 
         window.onload = function() {
-            // DETEKSI AUTO-KONFIGURASI PARAMETER URL (Sangat berguna untuk menyinkronkan pengaturan antar browser!)
+            // DETEKSI AUTO-KONFIGURASI PARAMETER URL
             const urlParams = new URLSearchParams(window.location.search);
-            const queryCsv = urlParams.get('csv');
             const queryGas = urlParams.get('gas');
 
-            if (queryCsv) {
-                localStorage.setItem("kop_csv_url", decodeURIComponent(queryCsv));
-            }
             if (queryGas) {
                 localStorage.setItem("kop_gas_url", decodeURIComponent(queryGas));
             }
@@ -510,7 +506,6 @@
             checkCashierLoginSession();
             generateShareLink();
             
-            // Bungkus inisialisasi ikon dalam blok pengaman try-catch
             try {
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
@@ -596,18 +591,15 @@
             state.csvUrl = localStorage.getItem("kop_csv_url") || DEFAULT_CSV_URL;
 
             const gasInput = document.getElementById('cfg-gas-url');
-            const csvInput = document.getElementById('cfg-csv-url');
             if (gasInput) gasInput.value = state.gasUrl;
-            if (csvInput) csvInput.value = state.csvUrl;
 
             const localTx = localStorage.getItem("kop_local_tx");
             state.transaksi = localTx ? JSON.parse(localTx) : [];
         }
 
-        // Generate Link Berbagi Konfigurasi
         function generateShareLink() {
             const baseUri = window.location.href.split('?')[0];
-            const shareUrl = `${baseUri}?csv=${encodeURIComponent(state.csvUrl)}&gas=${encodeURIComponent(state.gasUrl)}`;
+            const shareUrl = `${baseUri}?gas=${encodeURIComponent(state.gasUrl)}`;
             const linkInput = document.getElementById('cfg-share-link');
             if (linkInput) linkInput.value = shareUrl;
         }
@@ -729,6 +721,7 @@
             }).join('');
         }
 
+        // AMBIL DATA SISWA & TRANSAKSI SEKALIGUS (Dual-Fetch: Siswa dan Log Transaksi Riil)
         function tarikDatabaseTerbaru(manual = false) {
             const badge = document.getElementById('connection-badge');
             badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Sinkronisasi...`;
@@ -738,6 +731,7 @@
                 showToast("Menghubungkan ke Google Sheets...", "info");
             }
 
+            // Pemicu 1: Tarik database siswa langsung dari CSV dengan struktur kolom terikat ketat
             fetch(state.csvUrl)
                 .then(response => {
                     if (!response.ok) throw new Error("Respons Jaringan Bermasalah");
@@ -748,10 +742,8 @@
                     if (parsed && parsed.length > 0) {
                         state.siswa = parsed;
                         
-                        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Live Cloud Active`;
-                        badge.className = "flex items-center gap-1.5 font-semibold text-emerald-400 px-2.5 py-0.5 bg-emerald-500/10 rounded-full";
-                        
-                        if (manual) showToast("Database Siswa berhasil disinkronkan secara live!", "success");
+                        // Sukses load siswa, jalankan pemicu 2: Tarik transaksi riil dari GAS
+                        tarikRiwayatTransaksiCloud(manual);
                     } else {
                         throw new Error("Data Parsing Kosong");
                     }
@@ -764,12 +756,57 @@
                     badge.className = "flex items-center gap-1.5 font-semibold text-amber-400 px-2.5 py-0.5 bg-amber-500/10 rounded-full";
                     
                     if (manual) showToast("Menggunakan basis data cadangan karena kendala koneksi.", "warning");
+                    updateDatabaseUI();
+                });
+        }
+
+        // TARIK LOG TRANSAKSI RIIL DARI WEB APP GAS
+        function tarikRiwayatTransaksiCloud(manual = false) {
+            const badge = document.getElementById('connection-badge');
+            
+            if (!state.gasUrl || state.gasUrl.includes("XXXX")) {
+                updateDatabaseUI();
+                return;
+            }
+
+            fetch(`${state.gasUrl}?action=getData`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Gagal membaca log transaksi cloud.");
+                    return response.json();
+                })
+                .then(res => {
+                    // Cek format standard dari GAS terbaru
+                    if (res && res.status === "success" && res.transaksi) {
+                        state.transaksi = res.transaksi;
+                        localStorage.setItem("kop_local_tx", JSON.stringify(state.transaksi));
+                    } else if (Array.isArray(res)) {
+                        state.transaksi = res;
+                        localStorage.setItem("kop_local_tx", JSON.stringify(state.transaksi));
+                    }
+                    
+                    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Live Cloud Active`;
+                    badge.className = "flex items-center gap-1.5 font-semibold text-emerald-400 px-2.5 py-0.5 bg-emerald-500/10 rounded-full";
+                    
+                    if (manual) {
+                        showToast("Koneksi penuh aktif! Database siswa dan riwayat transaksi telah diselaraskan.", "success");
+                    }
+                })
+                .catch(err => {
+                    console.warn("Gagal menyinkronkan transaksi cloud:", err);
+                    if (manual) {
+                        showToast("Data siswa termuat, tetapi gagal menyinkronkan riwayat transaksi dari cloud.", "warning");
+                    }
                 })
                 .finally(() => {
                     updateDatabaseUI();
                 });
         }
 
+        // PARSER CSV INTEGRATIF DENGAN KETENTUAN STRICT MAPPING:
+        // Kolom A (Index 0) = Nama Lengkap
+        // Kolom B (Index 1) = No Pendaftaran
+        // Kolom C (Index 2) = Asal Sekolah
+        // Kolom D (Index 3) = Jenis Kelamin
         function parseCsvToJSON(text) {
             const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
             if (lines.length === 0) return [];
@@ -793,23 +830,28 @@
                 return cols.map(val => val.replace(/^"|"$/g, '').trim());
             }
 
-            const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase());
-            
-            const idxNo = headers.findIndex(h => h.includes('pendaftaran') || h.includes('reg') || h.includes('no'));
-            const idxNama = headers.findIndex(h => h.includes('nama') || h.includes('lengkap'));
-            const idxAsal = headers.findIndex(h => h.includes('asal') || h.includes('sekolah'));
-            const idxJk = headers.findIndex(h => h.includes('kelamin') || h.includes('jk') || h.includes('gender'));
-
             const list = [];
+            // Lewati baris pertama (Header)
             for (let i = 1; i < lines.length; i++) {
                 const cols = splitCSVLine(lines[i]);
                 if (cols.length < 2) continue;
 
+                // Memakai STRICT INDEX MAPPING sesuai instruksi
+                const nama = cols[0] || "-";
+                const noPendaftaran = cols[1] || "-";
+                const asalSekolah = cols[2] || "-";
+                const jenisKelamin = cols[3] || "-";
+
+                // Filter header duplikat jika tidak sengaja terbaca kembali
+                if (noPendaftaran.toLowerCase().includes("pendaftaran") || noPendaftaran.toLowerCase().includes("reg") || nama.toLowerCase() === "nama_lengkap") {
+                    continue;
+                }
+
                 list.push({
-                    nomor_pendaftaran: idxNo !== -1 ? cols[idxNo] : `REG-${100+i}`,
-                    nama_lengkap: idxNama !== -1 ? cols[idxNama] : cols[0] || 'Nama',
-                    asal_sekolah: idxAsal !== -1 ? cols[idxAsal] : cols[2] || '-',
-                    jenis_kelamin: idxJk !== -1 ? cols[idxJk] : cols[3] || '-'
+                    nomor_pendaftaran: noPendaftaran.trim(),
+                    nama_lengkap: nama.trim().toUpperCase(),
+                    asal_sekolah: asalSekolah.trim(),
+                    jenis_kelamin: jenisKelamin.trim()
                 });
             }
             return list;
@@ -892,7 +934,6 @@
             const submitBtn = document.getElementById('submitBtn');
             const submitIcon = document.getElementById('submit-icon');
             
-            // Set Loading state
             submitBtn.disabled = true;
             submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
             submitIcon.className = "fa-solid fa-spinner animate-spin w-4 h-4";
@@ -940,9 +981,7 @@
                 })
                 .catch(err => {
                     console.error("Gagal mengirim ke Apps Script:", err);
-                    
                     catatTransaksiLokal(payload);
-                    
                     bukaModal(
                         "Koneksi Gagal / Tertunda", 
                         `Data disimpan LOKAL pada browser. Masalah: ${err.message}. Pastikan Web App GAS Anda sudah di-deploy ulang sebagai 'Anyone' (Siapa saja).`, 
@@ -954,9 +993,7 @@
                     submitBtn.disabled = false;
                     submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
                     submitIcon.className = "w-4 h-4";
-                    try {
-                        if (typeof lucide !== 'undefined') lucide.createIcons();
-                    } catch(e){}
+                    lucide.createIcons();
                 });
             } else {
                 catatTransaksiLokal(payload);
@@ -965,9 +1002,7 @@
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
                 submitIcon.className = "w-4 h-4";
-                try {
-                    if (typeof lucide !== 'undefined') lucide.createIcons();
-                } catch(e){}
+                lucide.createIcons();
             }
         }
 
@@ -990,13 +1025,9 @@
 
         function simpanConfig() {
             const gas = document.getElementById('cfg-gas-url').value.trim();
-            const csv = document.getElementById('cfg-csv-url').value.trim();
-
             state.gasUrl = gas;
-            state.csvUrl = csv || DEFAULT_CSV_URL;
 
             localStorage.setItem("kop_gas_url", gas);
-            localStorage.setItem("kop_csv_url", csv);
 
             showToast("Konfigurasi API berhasil disimpan!", "success");
             generateShareLink();
@@ -1005,7 +1036,6 @@
 
         function restoreDefaultConfig() {
             document.getElementById('cfg-gas-url').value = DEFAULT_GAS_URL;
-            document.getElementById('cfg-csv-url').value = DEFAULT_CSV_URL;
             simpanConfig();
         }
 
@@ -1067,7 +1097,6 @@
             }
 
             const totalSiswa = state.siswa.length;
-            const nominalLunas = 750000;
             
             const bayarPerSiswa = {};
             state.transaksi.forEach(tx => {
@@ -1076,18 +1105,19 @@
                 bayarPerSiswa[reg] += parseFloat(tx.jumlah_pembayaran || tx.jumlahPembayaran || 0);
             });
 
-            let lunasCount = 0;
+            let sudahBayarCount = 0;
             let totalDana = 0;
 
             state.siswa.forEach(s => {
                 const totalBayar = bayarPerSiswa[s.nomor_pendaftaran] || 0;
-                if (totalBayar >= nominalLunas) {
-                    lunasCount++;
+                if (totalBayar > 0) {
+                    sudahBayarCount++;
                 }
                 totalDana += totalBayar;
             });
 
             document.getElementById('stat-total-siswa').innerText = totalSiswa;
+            document.getElementById('stat-siswa-lunas').innerText = sudahBayarCount;
             document.getElementById('stat-total-dana').innerText = "Rp " + totalDana.toLocaleString('id-ID');
 
             renderRekapKasir();
@@ -1098,62 +1128,19 @@
             pilihSiswa(noReg);
         }
 
-        function renderApexCharts(totalDana, lunasCount, totalSiswa) {
-            const trendEl = document.querySelector("#chart-payment-trend");
-            const donutEl = document.querySelector("#chart-status-donut");
-
-            if (!trendEl || !donutEl) return;
-
-            const donutOptions = {
-                chart: { type: 'donut', height: 260 },
-                series: [lunasCount, Math.max(0, totalSiswa - lunasCount)],
-                labels: ['Lunas', 'Belum Lunas'],
-                colors: ['#10b981', '#f43f5e'],
-                responsive: [{ breakpoint: 480, options: { legend: { position: 'bottom' } } }],
-                legend: { position: 'bottom', fontSize: '11px', fontFamily: 'Plus Jakarta Sans' },
-                dataLabels: { enabled: false }
-            };
-
-            if (donutChart) donutChart.destroy();
-            donutChart = new ApexCharts(donutEl, donutOptions);
-            donutChart.render();
-
-            const trendOptions = {
-                chart: { type: 'area', height: 260, toolbar: { show: false }, fontFamily: 'Plus Jakarta Sans' },
-                dataLabels: { enabled: false },
-                stroke: { curve: 'smooth', width: 3 },
-                colors: ['#10b981'],
-                series: [{
-                    name: 'Dana Setor',
-                    data: [totalDana * 0.3, totalDana * 0.5, totalDana * 0.7, totalDana]
-                }],
-                xaxis: {
-                    categories: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
-                    labels: { style: { colors: '#64748b', fontSize: '10px' } }
-                },
-                yaxis: {
-                    labels: {
-                        formatter: function(val) { return "Rp " + val.toLocaleString('id-ID'); },
-                        style: { colors: '#64748b', fontSize: '10px' }
-                    }
-                },
-                grid: { borderColor: '#f1f5f9' },
-                tooltip: { y: { formatter: function(val) { return "Rp " + val.toLocaleString('id-ID'); } } }
-            };
-
-            if (trendChart) trendChart.destroy();
-            trendChart = new ApexCharts(trendEl, trendOptions);
-            trendChart.render();
-        }
-
         function filterDatabaseTable() {
             const val = document.getElementById('search-db-input').value.toLowerCase();
             const rows = document.querySelectorAll('#tabel-db-siswa tr');
             rows.forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(val) ? "" : "none";
+                if (row.textContent.toLowerCase().includes(val)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
             });
         }
 
+        // TAB SWITCHER
         function switchTab(tabId) {
             const tabs = ['dashboard', 'kasir', 'database', 'riwayat', 'rekap', 'config'];
             tabs.forEach(t => {
